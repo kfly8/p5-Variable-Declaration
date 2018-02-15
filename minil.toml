@@ -1,0 +1,6 @@
+name = "PerlX-Declare"
+# badges = ["travis"]
+authority="cpan:KFLY"
+
+module_maker="ModuleBuildTiny"
+
