@@ -58,7 +58,7 @@ sub _required_type_check { 1 }
 sub _render_let {
     my $args = shift;
     my $declaration = _render_declaration($args);
-    return sprintf('%s', $args);
+    return sprintf('%s', $declaration);
 }
 
 sub _render_const {
@@ -72,7 +72,7 @@ sub _render_declaration {
     my $args = shift;
     my @lines;
 
-    my $dec = join ', ', map { $_->[1] } @{$args->{type_vars}};
+    my $dec = join ', ', map { $_->{var} } @{$args->{type_vars}};
     if ($args->{is_list_context}) {
         $dec = "($dec)"
     }
@@ -136,8 +136,8 @@ sub _parse_type_varlist {
 
     $type_varlist =~ m{ (?<list>(?&PerlParenthesesList)) $PPR::GRAMMAR }x;
     my $is_list_context = $+{list} ? 1 : 0;
-    my $type_vars       = $+{list} ? [ map { _parse_typevar($_) } split ',', $+{list} ]
-                        : [ _parse_typevar($type_varlist) ];
+    my $type_vars       = $+{list} ? [ map { _parse_type_var($_) } split ',', $+{list} ]
+                        : [ _parse_type_var($type_varlist) ];
 
     return {
         is_list_context => $is_list_context,
