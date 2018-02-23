@@ -105,7 +105,7 @@ sub _render_data_lock {
 sub _parse {
     my $src = shift;
 
-    $src =~ m{
+    return unless $src =~ m{
         (?<statement>
             (?&PerlOWS)
             (?<assign_to>
@@ -118,10 +118,9 @@ sub _parse {
             )
             (?<eq>=)? (?&PerlOWS)
             (?<assign>(?&PerlConditionalExpression))?
-        )
-        $PPR::GRAMMAR }x;
+        ) $PPR::GRAMMAR }x;
 
-    return {
+    return +{
         statement       => $+{statement},
         type_varlist    => $+{type_varlist},
         assign_to       => $+{assign_to},
@@ -132,29 +131,39 @@ sub _parse {
 }
 
 sub _parse_type_varlist {
-    my $type_varlist = shift;
+    my $expression = shift;
 
-    $type_varlist =~ m{ (?<list>(?&PerlParenthesesList)) $PPR::GRAMMAR }x;
-    my $is_list_context = $+{list} ? 1 : 0;
-    my $type_vars       = $+{list} ? [ map { _parse_type_var($_) } split ',', $+{list} ]
-                        : [ _parse_type_var($type_varlist) ];
-
-    return {
-        is_list_context => $is_list_context,
-        type_vars       => $type_vars,
+    if ($expression =~ m{ (?<list>(?&PerlParenthesesList)) $PPR::GRAMMAR }x) {
+        my @list = split ',', $+{list} =~ s/\A\((.+)\)\Z/$1/r;
+        return +{
+            is_list_context => 1,
+            type_vars       => [ map { _parse_type_var($_) } @list ],
+        }
+    }
+    elsif (my $type_var = _parse_type_var($expression)) {
+        return +{
+            is_list_context => 0,
+            type_vars       => [ $type_var ],
+        }
+    }
+    else {
+        return;
     }
 }
 
 sub _parse_type_var {
-    my $type_var = shift;
+    my $expression = shift;
 
-    $type_var =~ m{
+    return unless $expression =~ m{
+        \A
+        (?&PerlOWS)
         (?<type>(?&PerlIdentifier))? (?&PerlOWS)
-        (?<var>(?&PerlVariable)) (?&PerlOWS)
+        (?<var>(?:(?&PerlVariable)))
+        \Z
         $PPR::GRAMMAR
     }x;
 
-    return {
+    return +{
         type => $+{type},
         var  => $+{var},
     }
