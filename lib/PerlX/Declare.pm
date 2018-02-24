@@ -43,7 +43,7 @@ sub define_declaration {
     my $tv = _parse_type_varlist($m->{type_varlist});
     Carp::croak "variable declaration is required'" unless grep { $_->{var} } @{$tv->{type_vars}};
 
-    my $args = +{ declaration => $declaration, %$m, %$tv };
+    my $args = +{ declaration => $declaration, %$m, %$tv, use_type => _use_type() };
     substr($$ref, 0, length $m->{statement}) = _render_declaration($args);
 }
 
@@ -57,13 +57,13 @@ sub define_const {
     my $tv = _parse_type_varlist($m->{type_varlist});
     Carp::croak "variable declaration is required'" unless grep { $_->{var} } @{$tv->{type_vars}};
 
-    my $args = +{ declaration => 'my', %$m, %$tv };
+    my $args = +{ declaration => 'my', %$m, %$tv, use_type => _use_type() };
     my $declaration = _render_declaration($args);
     my $data_lock   = _render_data_lock($args);
     substr($$ref, 0, length $m->{statement}) = sprintf('%s; %s', $declaration, $data_lock);
 }
 
-sub _required_type_check { 1 }
+sub _use_type { 1 }
 
 sub _render_declaration {
     my $args = shift;
@@ -73,9 +73,9 @@ sub _render_declaration {
     if ($args->{is_list_context}) {
         $dec = "($dec)"
     }
-    push @lines => "@{[$args->{declaration}]} $dec @{[$args->{attributes}||'']}";
+    push @lines => "@{[$args->{declaration}]} $dec@{[$args->{attributes}||'']}";
 
-    if (_required_type_check()) {
+    if ($args->{use_type}) {
         for my $type_var (@{$args->{type_vars}}) {
             if ($type_var->{type}) {
                 push @lines => "ttie $type_var->{var}, $type_var->{type}";
