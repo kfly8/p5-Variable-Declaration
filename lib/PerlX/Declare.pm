@@ -15,29 +15,36 @@ use Type::Tie ();
 sub import {
     my $caller = caller;
 
+    feature->import::into($caller, 'state');
     Data::Lock->import::into($caller, 'dlock');
-    Type::Tie->import::into($caller);
+    Type::Tie->import::into($caller, 'ttie');
 
-    Keyword::Simple::define 'let' => \&define_let;
-    Keyword::Simple::define 'const' => \&define_const;
+    Keyword::Simple::define 'let'    => \&define_let;
+    Keyword::Simple::define 'static' => \&define_static;
+    Keyword::Simple::define 'const'  => \&define_const;
 }
 
 sub unimport {
     Keyword::Simple::undefine 'let';
+    Keyword::Simple::undefine 'static';
     Keyword::Simple::undefine 'const';
 }
 
-sub define_let {
-    my $ref = shift;
+sub define_let { define_declaration('my', @_) }
+sub define_static { define_declaration('state', @_) }
+
+sub define_declaration {
+    my ($declaration, $ref) = @_;
 
     my $m = _parse($$ref);
-    Carp::croak "syntax error near 'let'" unless $m->{statement};
+    Carp::croak "syntax error near '$declaration'" unless $m->{statement};
     Carp::croak "illegal expression" unless ($m->{eq} && $m->{assign}) or (!$m->{eq} && !$m->{assign});
 
     my $tv = _parse_type_varlist($m->{type_varlist});
     Carp::croak "variable declaration is required'" unless grep { $_->{var} } @{$tv->{type_vars}};
 
-    substr($$ref, 0, length $m->{statement}) = _render_let({%$m, %$tv});
+    my $args = +{ declaration => $declaration, %$m, %$tv };
+    substr($$ref, 0, length $m->{statement}) = _render_declaration($args);
 }
 
 sub define_const {
@@ -50,23 +57,13 @@ sub define_const {
     my $tv = _parse_type_varlist($m->{type_varlist});
     Carp::croak "variable declaration is required'" unless grep { $_->{var} } @{$tv->{type_vars}};
 
-    substr($$ref, 0, length $m->{statement}) = _render_const({%$m, %$tv});
+    my $args = +{ declaration => 'my', %$m, %$tv };
+    my $declaration = _render_declaration($args);
+    my $data_lock   = _render_data_lock($args);
+    substr($$ref, 0, length $m->{statement}) = sprintf('%s; %s', $declaration, $data_lock);
 }
 
 sub _required_type_check { 1 }
-
-sub _render_let {
-    my $args = shift;
-    my $declaration = _render_declaration($args);
-    return sprintf('%s', $declaration);
-}
-
-sub _render_const {
-    my $args = shift;
-    my $declaration = _render_declaration($args);
-    my $data_lock   = _render_data_lock($args);
-    return sprintf('%s; %s', $declaration, $data_lock);
-}
 
 sub _render_declaration {
     my $args = shift;
@@ -76,7 +73,7 @@ sub _render_declaration {
     if ($args->{is_list_context}) {
         $dec = "($dec)"
     }
-    push @lines => "my $dec @{[$args->{attributes}||'']}";
+    push @lines => "@{[$args->{declaration}]} $dec @{[$args->{attributes}||'']}";
 
     if (_required_type_check()) {
         for my $type_var (@{$args->{type_vars}}) {
