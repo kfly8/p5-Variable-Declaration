@@ -5,14 +5,14 @@ use PerlX::Declare;
 
 my @OK = (
     +{
-        declaration     => 'my',
+        declare         => 'my',
         is_list_context => 0,
         type_vars       => [ { var => '$foo' } ],
         attributes      => undef,
         assign          => undef,
     } => 'my $foo', 'simple',
     +{
-        declaration     => 'my',
+        declare         => 'my',
         is_list_context => 1,
         type_vars       => [ { var => '$foo' } ],
         attributes      => undef,
@@ -20,7 +20,7 @@ my @OK = (
         use_type        => 1,
     } => 'my ($foo)', 'is_list_context => 1',
     +{
-        declaration     => 'my',
+        declare         => 'my',
         is_list_context => 0,
         type_vars       => [ { var => '$foo' } ],
         attributes      => ':Good',
@@ -28,7 +28,7 @@ my @OK = (
         use_type        => 1,
     } => 'my $foo:Good', "attributes => ':Good'",
     +{
-        declaration     => 'my',
+        declare         => 'my',
         is_list_context => 0,
         type_vars       => [ { var => '$foo' } ],
         attributes      => undef,
@@ -36,7 +36,7 @@ my @OK = (
         use_type        => 1,
     } => 'my $foo;$foo = \'hello\'', "assign => 'hello'",
     +{
-        declaration     => 'my',
+        declare         => 'my',
         is_list_context => 0,
         type_vars       => [ { var => '$foo', type => 'Str' } ],
         attributes      => undef,
@@ -44,7 +44,7 @@ my @OK = (
         use_type        => 1,
     } => 'my $foo;ttie $foo, Str', "type => 'Str'",
     +{
-        declaration     => 'my',
+        declare         => 'my',
         is_list_context => 1,
         type_vars       => [ { var => '$foo' }, { var => '$bar' } ],
         attributes      => undef,
@@ -52,7 +52,7 @@ my @OK = (
         use_type        => 1,
     } => 'my ($foo, $bar)', "type_vars > 1",
     +{
-        declaration     => 'my',
+        declare         => 'my',
         is_list_context => 1,
         type_vars       => [ { var => '$foo', type => 'Str' }, { var => '$bar' } ],
         attributes      => undef,
@@ -60,7 +60,7 @@ my @OK = (
         use_type        => 1,
     } => 'my ($foo, $bar);ttie $foo, Str', "type_vars > 1 && type => 'Str'",
     +{
-        declaration     => 'my',
+        declare         => 'my',
         is_list_context => 1,
         type_vars       => [ { var => '$foo', type => 'Str' }, { var => '$bar', type => 'Int8' } ],
         attributes      => undef,
@@ -68,7 +68,7 @@ my @OK = (
         use_type        => 1,
     } => 'my ($foo, $bar);ttie $foo, Str;ttie $bar, Int8', "type_vars > 1 && set types",
     +{
-        declaration     => 'my',
+        declare         => 'my',
         is_list_context => 1,
         type_vars       => [ { var => '$foo', type => 'Str' }, { var => '$bar' } ],
         attributes      => undef,

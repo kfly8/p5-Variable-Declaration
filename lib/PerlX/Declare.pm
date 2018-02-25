@@ -30,34 +30,35 @@ sub unimport {
     Keyword::Simple::undefine 'const';
 }
 
-sub define_let { define_declaration('my', @_) }
-sub define_static { define_declaration('state', @_) }
+sub define_let { define_declaration(let => 'my', @_) }
+sub define_static { define_declaration(static => 'state', @_) }
 
 sub define_declaration {
-    my ($declaration, $ref) = @_;
+    my ($keyword, $declare, $ref) = @_;
 
     my $m = _parse($$ref);
-    Carp::croak "syntax error near '$declaration'" unless $m->{statement};
-    Carp::croak "illegal expression" unless ($m->{eq} && $m->{assign}) or (!$m->{eq} && !$m->{assign});
+    Carp::croak "variable declaration is required" unless $m->{type_varlist};
+    Carp::croak "illegal expression"               unless ($m->{eq} && $m->{assign}) or (!$m->{eq} && !$m->{assign});
+    Carp::croak "syntax error near '$keyword'"     unless $m->{statement};
 
-    my $tv = _parse_type_varlist($m->{type_varlist});
-    Carp::croak "variable declaration is required'" unless grep { $_->{var} } @{$tv->{type_vars}};
+    my $tv   = _parse_type_varlist($m->{type_varlist});
+    my $args = +{ declare => $declare, %$m, %$tv, use_type => _use_type() };
 
-    my $args = +{ declaration => $declaration, %$m, %$tv, use_type => _use_type() };
-    substr($$ref, 0, length $m->{statement}) = _render_declaration($args);
+    my $declaration = _render_declaration($args);
+    substr($$ref, 0, length $m->{statement}) = $declaration;
 }
 
 sub define_const {
     my $ref = shift;
 
     my $m = _parse($$ref);
-    Carp::croak "syntax error near 'const'" unless $m->{statement};
+    Carp::croak "variable declaration is required'"    unless $m->{type_varlist};
     Carp::croak "'const' declaration must be assigned" unless $m->{eq} && $m->{assign};
+    Carp::croak "syntax error near 'const'"            unless $m->{statement};
 
-    my $tv = _parse_type_varlist($m->{type_varlist});
-    Carp::croak "variable declaration is required'" unless grep { $_->{var} } @{$tv->{type_vars}};
+    my $tv   = _parse_type_varlist($m->{type_varlist});
+    my $args = +{ declare => 'my', %$m, %$tv, use_type => _use_type() };
 
-    my $args = +{ declaration => 'my', %$m, %$tv, use_type => _use_type() };
     my $declaration = _render_declaration($args);
     my $data_lock   = _render_data_lock($args);
     substr($$ref, 0, length $m->{statement}) = sprintf('%s; %s', $declaration, $data_lock);
@@ -73,7 +74,7 @@ sub _render_declaration {
     if ($args->{is_list_context}) {
         $dec = "($dec)"
     }
-    push @lines => "@{[$args->{declaration}]} $dec@{[$args->{attributes}||'']}";
+    push @lines => "@{[$args->{declare}]} $dec@{[$args->{attributes}||'']}";
 
     if ($args->{use_type}) {
         for my $type_var (@{$args->{type_vars}}) {
