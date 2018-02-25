@@ -4,7 +4,7 @@ use Test::More;
 use PerlX::Declare;
 
 my @CHECK =                 qw/statement type_varlist assign_to eq assign attributes/;
-my %OK = (
+my @OK = (
     '$foo'               => ['$foo',              '$foo',       '$foo',    undef, undef, undef],
     '$foo;bar'           => ['$foo',              '$foo',       '$foo',    undef, undef, undef],
     '$foo}bar'           => ['$foo',              '$foo',       '$foo',    undef, undef, undef],
@@ -47,9 +47,8 @@ my %OK = (
     '($foo, Int8 $bar) = ("hello", "world")'     => ['($foo, Int8 $bar) = ("hello", "world")',     '($foo, Int8 $bar)',       '($foo, Int8 $bar) ',    '=', '("hello", "world")', undef],
 );
 
-sub case_ok {
-    my $src = shift;
-    my $expected = $OK{$src};
+sub check {
+    my ($src, $expected) = @_;
     my $got = PerlX::Declare::_parse($src);
 
     note "'$src'";
@@ -60,7 +59,9 @@ sub case_ok {
 }
 
 subtest 'case ok' => sub {
-    case_ok($_) for keys %OK;
+    while (@OK) {
+        check(shift @OK, shift @OK);
+    }
 };
 
 done_testing;

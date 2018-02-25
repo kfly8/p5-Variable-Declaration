@@ -3,7 +3,7 @@ use warnings;
 use Test::More;
 use PerlX::Declare;
 
-my %OK = (
+my @OK = (
     '$foo'                 => [0, [tv('$foo')]],
     '$foo#bar'             => [0, [tv('$foo#bar')]],
     'Str $foo'             => [0, [tv('Str $foo')]],
@@ -26,9 +26,8 @@ sub tv {
     PerlX::Declare::_parse_type_var($expression)
 }
 
-sub case_ok {
-    my $expression = shift;
-    my $expected = $OK{$expression};
+sub check_ok {
+    my ($expression, $expected) = @_;
     my $got = PerlX::Declare::_parse_type_varlist($expression);
 
     note "'$expression'";
@@ -37,7 +36,7 @@ sub case_ok {
     note explain $got unless $got;
 }
 
-sub case_ng {
+sub check_ng {
     my $expression = shift;
     my $got = PerlX::Declare::_parse_type_varlist($expression);
 
@@ -45,12 +44,15 @@ sub case_ng {
     is $got, undef;
     note explain $got if $got;
 }
+
 subtest 'case ok' => sub {
-    case_ok($_) for keys %OK;
+    while (@OK) {
+        check_ok(shift @OK, shift @OK);
+    }
 };
 
 subtest 'case ng' => sub {
-    case_ng($_) for @NG;
+    check_ng($_) for @NG;
 };
 
 done_testing;

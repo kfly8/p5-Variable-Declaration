@@ -85,8 +85,8 @@ sub check {
     is $got, $expected;
 }
 
-for (my $i = 0; $i < @OK; $i++) {
-    check($OK[$i], $OK[++$i], $OK[++$i]);
+while (@OK) {
+    check(shift @OK, shift @OK, shift @OK);
 }
 
 done_testing;
