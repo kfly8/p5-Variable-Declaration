@@ -11,14 +11,17 @@ my @OK = (
     'let ($foo)'     => 'my $foo', # equivalent to 'my ($foo)'
     'let $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), my $foo', # equivalent to 'my $foo:Good'
     'let $foo = 123' => 'my $foo;$foo = 123', 'let Str $foo'   => 'my $foo;ttie $foo, Str',
+    'let $foo = 0'   => 'my $foo;$foo = 0', 'let Str $foo'   => 'my $foo;ttie $foo, Str',
 
     'static $foo'       => 'state $foo',
     'static ($foo)'     => 'state $foo', # equivalent to 'state ($foo)'
     'static $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), state $foo', # equivalent to 'state $foo:Good'
     'static $foo = 123' => 'state $foo;$foo = 123',
+    'static $foo = 0'   => 'state $foo;$foo = 0',
     'static Str $foo'   => 'state $foo;ttie $foo, Str',
 
     'const $foo = 123'           => 'my $foo;$foo = 123;dlock($foo)',
+    'const $foo = 0'             => 'my $foo;$foo = 0;dlock($foo)',
     'const Str $foo = \'hello\'' => 'my $foo;ttie $foo, Str;$foo = \'hello\';dlock($foo)',
 );
 

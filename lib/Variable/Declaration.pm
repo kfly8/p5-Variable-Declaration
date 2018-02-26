@@ -47,7 +47,7 @@ sub define_declaration {
 
     my $m = _parse($$ref);
     Carp::croak "variable declaration is required" unless $m->{type_varlist};
-    Carp::croak "illegal expression"               unless ($m->{eq} && $m->{assign}) or (!$m->{eq} && !$m->{assign});
+    Carp::croak "illegal expression"               unless (defined $m->{eq} && defined $m->{assign}) or (!defined $m->{eq} && !defined $m->{assign});
 
     my $tv   = _parse_type_varlist($m->{type_varlist});
     my $args = +{ declare => $declare, %$m, %$tv, level => $LEVEL };
@@ -61,7 +61,7 @@ sub define_const {
 
     my $m = _parse($$ref);
     Carp::croak "variable declaration is required'"    unless $m->{type_varlist};
-    Carp::croak "'const' declaration must be assigned" unless $m->{eq} && $m->{assign};
+    Carp::croak "'const' declaration must be assigned" unless defined $m->{eq} && defined $m->{assign};
 
     my $tv   = _parse_type_varlist($m->{type_varlist});
     my $args = +{ declare => 'my', %$m, %$tv, level => $LEVEL };
@@ -76,7 +76,7 @@ sub _render_declaration {
     my @lines;
     push @lines => _lines_dec($args);
     push @lines => _lines_type_tie($args)                if $args->{level} == 2;
-    push @lines => "@{[__dec($args)]} = $args->{assign}" if $args->{assign};
+    push @lines => "@{[__dec($args)]} = $args->{assign}" if defined $args->{assign};
     push @lines => _lines_type_check($args)              if $args->{level} == 1;
     return join ";", @lines;
 }
