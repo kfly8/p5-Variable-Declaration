@@ -39,7 +39,6 @@ sub define_declaration {
     my $m = _parse($$ref);
     Carp::croak "variable declaration is required" unless $m->{type_varlist};
     Carp::croak "illegal expression"               unless ($m->{eq} && $m->{assign}) or (!$m->{eq} && !$m->{assign});
-    Carp::croak "syntax error near '$keyword'"     unless $m->{statement};
 
     my $tv   = _parse_type_varlist($m->{type_varlist});
     my $args = +{ declare => $declare, %$m, %$tv, use_type => _use_type() };
@@ -54,7 +53,6 @@ sub define_const {
     my $m = _parse($$ref);
     Carp::croak "variable declaration is required'"    unless $m->{type_varlist};
     Carp::croak "'const' declaration must be assigned" unless $m->{eq} && $m->{assign};
-    Carp::croak "syntax error near 'const'"            unless $m->{statement};
 
     my $tv   = _parse_type_varlist($m->{type_varlist});
     my $args = +{ declare => 'my', %$m, %$tv, use_type => _use_type() };
@@ -104,6 +102,7 @@ sub _parse {
     my $src = shift;
 
     return unless $src =~ m{
+        \A
         (?<statement>
             (?&PerlOWS)
             (?<assign_to>

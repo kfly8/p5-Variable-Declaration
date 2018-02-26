@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use feature qw/state/;
 
 use Test::More;
 use B::Deparse;
@@ -13,6 +12,15 @@ my @OK = (
     'let $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), my $foo', # equivalent to 'my $foo:Good'
     'let $foo = 123' => 'my $foo;$foo = 123',
     'let Str $foo'   => 'my $foo;ttie $foo, Str',
+
+    'static $foo'       => 'state $foo',
+    'static ($foo)'     => 'state $foo', # equivalent to 'state ($foo)'
+    'static $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), state $foo', # equivalent to 'state $foo:Good'
+    'static $foo = 123' => 'state $foo;$foo = 123',
+    'static Str $foo'   => 'state $foo;ttie $foo, Str',
+
+    'const $foo = 123'           => 'my $foo;$foo = 123;dlock($foo)',
+    'const Str $foo = \'hello\'' => 'my $foo;ttie $foo, Str;$foo = \'hello\';dlock($foo)',
 );
 
 my @NG = (
@@ -23,11 +31,29 @@ my @NG = (
     'let $foo ='   => 'illegal expression',
     'let $foo 123' => 'illegal expression',
     'let $foo!'    => 'syntax error',
+
+    'static'          => 'variable declaration is required',
+    'static foo'      => 'variable declaration is required',
+    'static = 123'    => 'variable declaration is required',
+    'static $foo ='   => 'illegal expression',
+    'static $foo 123' => 'illegal expression',
+    'static $foo!'    => 'syntax error',
+
+    'const'           => 'variable declaration is required',
+    'const foo'       => 'variable declaration is required',
+    'const = 123'     => 'variable declaration is required',
+    'const $foo'      => '\'const\' declaration must be assigned',
+    'const ($foo)'    => '\'const\' declaration must be assigned',
+    'const $foo:Good' => '\'const\' declaration must be assigned',
+    'const Str $foo'  => '\'const\' declaration must be assigned',
+    'const $foo ='    => '\'const\' declaration must be assigned',
+    'const $foo 123'  => '\'const\' declaration must be assigned',
+    'const $foo!'     => '\'const\' declaration must be assigned',
 );
 
 sub check_ok {
     my ($expression, $expected) = @_;
-    state $deparse = B::Deparse->new();
+    my $deparse = B::Deparse->new();
 
     my $code = eval "sub { $expression }";
     my $text = $deparse->coderef2text($code);
@@ -49,7 +75,7 @@ sub check_ng {
         note $@;
     }
     else {
-        state $deparse = B::Deparse->new();
+        my $deparse = B::Deparse->new();
         my $text = $deparse->coderef2text($code);
         note $text;
     }
