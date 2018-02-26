@@ -25,9 +25,9 @@ sub import {
            : $DEFAULT_LEVEL;
 
     feature->import::into($caller, 'state');
-    Data::Lock->import::into($caller, 'dlock');
-    Type::Tie->import::into($caller, 'ttie');
     Carp->import::into($caller);
+    Type::Tie->import::into($caller, 'ttie');
+    Data::Lock->import::into($caller, 'dlock');
 
     Keyword::Simple::define 'let'    => \&define_let;
     Keyword::Simple::define 'static' => \&define_static;
@@ -45,40 +45,47 @@ sub define_static { define_declaration(static => 'state', @_) }
 sub define_const  { define_declaration(const => 'my', @_) }
 
 sub define_declaration {
-    my ($keyword, $perl_keyword, $ref) = @_;
+    my ($declaration, $perl_declaration, $ref) = @_;
 
-    my $m    = _valid($keyword => _parse($$ref));
-    my $tv   = _parse_type_varlist($m->{type_varlist});
-    my $args = +{ keyword => $keyword, perl_keyword => $perl_keyword, %$m, %$tv, level => $LEVEL };
+    my $match = _valid($declaration => _parse($$ref));
+    my $tv    = _parse_type_varlist($match->{type_varlist});
+    my $args  = +{ declaration => $declaration, perl_declaration => $perl_declaration, %$match, %$tv, level => $LEVEL };
 
-    substr($$ref, 0, length $m->{statement}) = _render_declaration($args);
+    substr($$ref, 0, length $match->{statement}) = _render_declaration($args);
 }
 
 sub _valid {
-    my ($keyword, $m) = @_;
+    my ($declaration, $match) = @_;
 
-    Carp::croak "variable declaration is required'" if !$m->{type_varlist};
-    Carp::croak "'const' declaration must be assigned" if $keyword eq 'const' && !(defined $m->{eq} && defined $m->{assign});
-    Carp::croak "illegal expression" if $keyword ne 'const' && !((defined $m->{eq} && defined $m->{assign}) or (!defined $m->{eq} && !defined $m->{assign}));
+    Carp::croak "variable declaration is required'"
+        unless $match->{type_varlist};
 
-    return $m;
+    my ($eq, $assign) = ($match->{eq}, $match->{assign});
+    if ($declaration eq 'const') {
+        Carp::croak "'const' declaration must be assigned"
+            unless defined $eq && defined $assign;
+    }
+    else {
+        Carp::croak "illegal expression"
+            unless (defined $eq && defined $assign) or (!defined $eq && !defined $assign);
+    }
+
+    return $match;
 }
 
 sub _render_declaration {
     my $args = shift;
-
     my @lines;
     push @lines => _lines_declaration($args);
     push @lines => _lines_type_check($args) if $args->{level} >= 1;
     push @lines => _lines_type_tie($args)   if $args->{level} == 2;
-    push @lines => _lines_data_lock($args)  if $args->{keyword} eq 'const';
-
+    push @lines => _lines_data_lock($args)  if $args->{declaration} eq 'const';
     return join ";", @lines;
 }
 
 sub _lines_declaration {
     my $args = shift;
-    my $s = $args->{perl_keyword};
+    my $s = $args->{perl_declaration};
     $s .= do {
         my $s = join ', ', map { $_->{var} } @{$args->{type_vars}};
         $args->{is_list_context} ? " ($s)" : " $s";
