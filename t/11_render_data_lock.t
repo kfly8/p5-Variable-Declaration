@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use PerlX::Declare;
+use Variable::Declaration;
 
 my @OK = (
     [ { var => '$foo' } ]
@@ -12,7 +12,7 @@ my @OK = (
 
 sub check {
     my ($type_vars, $expected) = @_;
-    my $got = PerlX::Declare::_render_data_lock({ type_vars => $type_vars });
+    my $got = Variable::Declaration::_render_data_lock({ type_vars => $type_vars });
     note "'$expected'";
     is $got, $expected;
 }

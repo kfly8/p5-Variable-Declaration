@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use PerlX::Declare;
+use Variable::Declaration;
 
 my @OK = (
     '$foo'                 => [0, [tv('$foo')]],
@@ -23,12 +23,12 @@ my @NG = (
 
 sub tv {
     my $expression = shift;
-    PerlX::Declare::_parse_type_var($expression)
+    Variable::Declaration::_parse_type_var($expression)
 }
 
 sub check_ok {
     my ($expression, $expected) = @_;
-    my $got = PerlX::Declare::_parse_type_varlist($expression);
+    my $got = Variable::Declaration::_parse_type_varlist($expression);
 
     note "'$expression'";
     is $got->{is_list_context}, $expected->[0], "is_list_context: @{[$expected->[0]]}";
@@ -38,7 +38,7 @@ sub check_ok {
 
 sub check_ng {
     my $expression = shift;
-    my $got = PerlX::Declare::_parse_type_varlist($expression);
+    my $got = Variable::Declaration::_parse_type_varlist($expression);
 
     note "'$expression'";
     is $got, undef;

@@ -1,4 +1,4 @@
-package PerlX::Declare;
+package Variable::Declaration;
 use v5.12.0;
 use strict;
 use warnings;
@@ -21,7 +21,7 @@ sub import {
     my $caller = caller;
 
     $LEVEL = exists $args{level} ? $args{level}
-           : exists $ENV{'PerlX::Declare::LEVEL'} ? $ENV{'PerlX::Declare::LEVEL'}
+           : exists $ENV{'Variable::Declaration::LEVEL'} ? $ENV{'Variable::Declaration::LEVEL'}
            : $DEFAULT_LEVEL;
 
     feature->import::into($caller, 'state');
@@ -203,11 +203,11 @@ __END__
 
 =head1 NAME
 
-PerlX::Declare - add type declaration syntax
+Variable::Declaration - add type declaration syntax
 
 =head1 SYNOPSIS
 
-    use PerlX::Declare;
+    use Variable::Declaration;
     use Types::Standard qw/Str/;
 
     let Str $foo = 'foo';
@@ -215,7 +215,7 @@ PerlX::Declare - add type declaration syntax
 
 =head1 DESCRIPTION
 
-PerlX::Declare is ...
+Variable::Declaration is ...
 
 =head1 LICENSE
 

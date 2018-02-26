@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use PerlX::Declare;
+use Variable::Declaration;
 
 my @CHECK =                 qw/statement type_varlist assign_to eq assign attributes/;
 my @OK = (
@@ -49,7 +49,7 @@ my @OK = (
 
 sub check {
     my ($src, $expected) = @_;
-    my $got = PerlX::Declare::_parse($src);
+    my $got = Variable::Declaration::_parse($src);
 
     note "'$src'";
     for (my $i = 0; $i < @CHECK; $i++) {

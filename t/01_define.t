@@ -3,7 +3,7 @@ use warnings;
 
 use Test::More;
 use B::Deparse;
-use PerlX::Declare;
+use Variable::Declaration;
 
 my @OK = (
     # expression     => deparsed text
@@ -98,12 +98,12 @@ subtest 'case ng' => sub {
 };
 
 subtest 'level 0' => sub {
-    PerlX::Declare->import(level => 0);
+    Variable::Declaration->import(level => 0);
     check_ok('let Str $foo', 'my $foo;');
 };
 
 subtest 'level 1' => sub {
-    PerlX::Declare->import(level => 1);
+    Variable::Declaration->import(level => 1);
     check_ok('let Str $foo = \'hello\'', 'my $foo;$foo = \'hello\';Str->get_message($foo) unless Str->check($foo)');
 };
 

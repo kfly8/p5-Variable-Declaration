@@ -1,14 +1,14 @@
 # NAME
 
-PerlX::Declare - It's new $module
+Variable::Declaration - It's new $module
 
 # SYNOPSIS
 
-    use PerlX::Declare;
+    use Variable::Declaration;
 
 # DESCRIPTION
 
-PerlX::Declare is ...
+Variable::Declaration is ...
 
 # LICENSE
 

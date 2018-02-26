@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use PerlX::Declare;
+use Variable::Declaration;
 
 my @OK = (
     +{
@@ -10,7 +10,7 @@ my @OK = (
         type_vars       => [ { var => '$foo' } ],
         attributes      => undef,
         assign          => undef,
-        level           => $PerlX::Declare::DEFAULT_LEVEL,
+        level           => $Variable::Declaration::DEFAULT_LEVEL,
     } => 'my $foo', 'simple',
     +{
         declare         => 'my',
@@ -18,7 +18,7 @@ my @OK = (
         type_vars       => [ { var => '$foo' } ],
         attributes      => undef,
         assign          => undef,
-        level           => $PerlX::Declare::DEFAULT_LEVEL,
+        level           => $Variable::Declaration::DEFAULT_LEVEL,
     } => 'my ($foo)', 'is_list_context => 1',
     +{
         declare         => 'my',
@@ -26,7 +26,7 @@ my @OK = (
         type_vars       => [ { var => '$foo' } ],
         attributes      => ':Good',
         assign          => undef,
-        level           => $PerlX::Declare::DEFAULT_LEVEL,
+        level           => $Variable::Declaration::DEFAULT_LEVEL,
     } => 'my $foo:Good', "attributes => ':Good'",
     +{
         declare         => 'my',
@@ -34,7 +34,7 @@ my @OK = (
         type_vars       => [ { var => '$foo' } ],
         attributes      => undef,
         assign          => "'hello'",
-        level           => $PerlX::Declare::DEFAULT_LEVEL,
+        level           => $Variable::Declaration::DEFAULT_LEVEL,
     } => 'my $foo;$foo = \'hello\'', "assign => 'hello'",
     +{
         declare         => 'my',
@@ -42,7 +42,7 @@ my @OK = (
         type_vars       => [ { var => '$foo', type => 'Str' } ],
         attributes      => undef,
         assign          => undef,
-        level           => $PerlX::Declare::DEFAULT_LEVEL,
+        level           => $Variable::Declaration::DEFAULT_LEVEL,
     } => 'my $foo;ttie $foo, Str', "type => 'Str'",
     +{
         declare         => 'my',
@@ -50,7 +50,7 @@ my @OK = (
         type_vars       => [ { var => '$foo' }, { var => '$bar' } ],
         attributes      => undef,
         assign          => undef,
-        level           => $PerlX::Declare::DEFAULT_LEVEL,
+        level           => $Variable::Declaration::DEFAULT_LEVEL,
     } => 'my ($foo, $bar)', "type_vars > 1",
     +{
         declare         => 'my',
@@ -58,7 +58,7 @@ my @OK = (
         type_vars       => [ { var => '$foo', type => 'Str' }, { var => '$bar' } ],
         attributes      => undef,
         assign          => undef,
-        level           => $PerlX::Declare::DEFAULT_LEVEL,
+        level           => $Variable::Declaration::DEFAULT_LEVEL,
     } => 'my ($foo, $bar);ttie $foo, Str', "type_vars > 1 && type => 'Str'",
     +{
         declare         => 'my',
@@ -66,7 +66,7 @@ my @OK = (
         type_vars       => [ { var => '$foo', type => 'Str' }, { var => '$bar', type => 'Int8' } ],
         attributes      => undef,
         assign          => undef,
-        level           => $PerlX::Declare::DEFAULT_LEVEL,
+        level           => $Variable::Declaration::DEFAULT_LEVEL,
     } => 'my ($foo, $bar);ttie $foo, Str;ttie $bar, Int8', "type_vars > 1 && set types",
     +{
         declare         => 'my',
@@ -88,7 +88,7 @@ my @OK = (
 
 sub check {
     my ($args, $expected, $msg) = @_;
-    my $got = PerlX::Declare::_render_declaration($args);
+    my $got = Variable::Declaration::_render_declaration($args);
     note "Case: $msg";
     note "'$expected'";
     is $got, $expected;

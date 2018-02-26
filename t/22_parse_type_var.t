@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use PerlX::Declare;
+use Variable::Declaration;
 
 my @OK = (
     '$foo'     => [undef, '$foo'],
@@ -33,7 +33,7 @@ my @NG = (
 
 sub check_ok {
     my ($expression, $expected) = @_;
-    my $got = PerlX::Declare::_parse_type_var($expression);
+    my $got = Variable::Declaration::_parse_type_var($expression);
 
     note "'$expression'";
     is $got->{type}, $expected->[0], "type: '@{[$expected->[0] || '']}'";
@@ -42,7 +42,7 @@ sub check_ok {
 
 sub check_ng {
     my $expression = shift;
-    my $got = PerlX::Declare::_parse_type_var($expression);
+    my $got = Variable::Declaration::_parse_type_var($expression);
 
     note "'$expression'";
     is $got, undef;
