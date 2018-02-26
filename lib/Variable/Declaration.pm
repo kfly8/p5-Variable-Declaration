@@ -39,62 +39,52 @@ sub unimport {
     Keyword::Simple::undefine 'const';
 }
 
-sub define_let { define_declaration(let => 'my', @_) }
+sub define_let    { define_declaration(let => 'my', @_) }
 sub define_static { define_declaration(static => 'state', @_) }
+sub define_const  { define_declaration(const => 'my', @_) }
 
 sub define_declaration {
-    my ($keyword, $declare, $ref) = @_;
+    my ($keyword, $perl_keyword, $ref) = @_;
 
-    my $m = _parse($$ref);
-    Carp::croak "variable declaration is required" unless $m->{type_varlist};
-    Carp::croak "illegal expression"               unless (defined $m->{eq} && defined $m->{assign}) or (!defined $m->{eq} && !defined $m->{assign});
-
+    my $m    = _valid($keyword => _parse($$ref));
     my $tv   = _parse_type_varlist($m->{type_varlist});
-    my $args = +{ declare => $declare, %$m, %$tv, level => $LEVEL };
+    my $args = +{ keyword => $keyword, perl_keyword => $perl_keyword, %$m, %$tv, level => $LEVEL };
 
-    my $declaration = _render_declaration($args);
-    substr($$ref, 0, length $m->{statement}) = $declaration;
+    substr($$ref, 0, length $m->{statement}) = _render_declaration($args);
 }
 
-sub define_const {
-    my $ref = shift;
+sub _valid {
+    my ($keyword, $m) = @_;
 
-    my $m = _parse($$ref);
-    Carp::croak "variable declaration is required'"    unless $m->{type_varlist};
-    Carp::croak "'const' declaration must be assigned" unless defined $m->{eq} && defined $m->{assign};
+    Carp::croak "variable declaration is required'" if !$m->{type_varlist};
+    Carp::croak "'const' declaration must be assigned" if $keyword eq 'const' && !(defined $m->{eq} && defined $m->{assign});
+    Carp::croak "illegal expression" if $keyword ne 'const' && !((defined $m->{eq} && defined $m->{assign}) or (!defined $m->{eq} && !defined $m->{assign}));
 
-    my $tv   = _parse_type_varlist($m->{type_varlist});
-    my $args = +{ declare => 'my', %$m, %$tv, level => $LEVEL };
-
-    my $declaration = _render_declaration($args);
-    my $data_lock   = _render_data_lock($args);
-    substr($$ref, 0, length $m->{statement}) = sprintf('%s; %s', $declaration, $data_lock);
+    return $m;
 }
 
 sub _render_declaration {
     my $args = shift;
+
     my @lines;
-    push @lines => _lines_dec($args);
-    push @lines => _lines_type_tie($args)                if $args->{level} == 2;
-    push @lines => "@{[__dec($args)]} = $args->{assign}" if defined $args->{assign};
-    push @lines => _lines_type_check($args)              if $args->{level} == 1;
+    push @lines => _lines_declaration($args);
+    push @lines => _lines_type_check($args) if $args->{level} >= 1;
+    push @lines => _lines_type_tie($args)   if $args->{level} == 2;
+    push @lines => _lines_data_lock($args)  if $args->{keyword} eq 'const';
+
     return join ";", @lines;
 }
 
-sub __dec {
+sub _lines_declaration {
     my $args = shift;
-    my $dec = join ', ', map { $_->{var} } @{$args->{type_vars}};
-    if ($args->{is_list_context}) {
-        $dec = "($dec)"
-    }
-    return $dec;
-}
-
-sub _lines_dec {
-    my $args = shift;
-    my @lines;
-    push @lines => sprintf('%s %s%s', $args->{declare}, __dec($args), $args->{attributes}||'');
-    return @lines;
+    my $s = $args->{perl_keyword};
+    $s .= do {
+        my $s = join ', ', map { $_->{var} } @{$args->{type_vars}};
+        $args->{is_list_context} ? " ($s)" : " $s";
+    };
+    $s .= $args->{attributes} if $args->{attributes};
+    $s .= " = @{[$args->{assign}]}" if defined $args->{assign};
+    return ($s);
 }
 
 sub _lines_type_tie {
@@ -119,13 +109,13 @@ sub _lines_type_check {
     return @lines;
 }
 
-sub _render_data_lock {
+sub _lines_data_lock {
     my $args = shift;
     my @lines;
     for my $type_var (@{$args->{type_vars}}) {
         push @lines => "dlock($type_var->{var})";
     }
-    return join ';', @lines;
+    return @lines;
 }
 
 sub _parse {
