@@ -10,8 +10,7 @@ my @OK = (
     'let $foo'       => 'my $foo',
     'let ($foo)'     => 'my $foo', # equivalent to 'my ($foo)'
     'let $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), my $foo', # equivalent to 'my $foo:Good'
-    'let $foo = 123' => 'my $foo;$foo = 123',
-    'let Str $foo'   => 'my $foo;ttie $foo, Str',
+    'let $foo = 123' => 'my $foo;$foo = 123', 'let Str $foo'   => 'my $foo;ttie $foo, Str',
 
     'static $foo'       => 'state $foo',
     'static ($foo)'     => 'state $foo', # equivalent to 'state ($foo)'
@@ -96,6 +95,16 @@ subtest 'case ng' => sub {
     while (@NG) {
         check_ng(shift @NG, shift @NG)
     }
+};
+
+subtest 'level 0' => sub {
+    PerlX::Declare->import(level => 0);
+    check_ok('let Str $foo', 'my $foo;');
+};
+
+subtest 'level 1' => sub {
+    PerlX::Declare->import(level => 1);
+    check_ok('let Str $foo = \'hello\'', 'my $foo;$foo = \'hello\';Str->get_message($foo) unless Str->check($foo)');
 };
 
 done_testing;

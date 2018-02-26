@@ -12,8 +12,17 @@ use Import::Into;
 use Data::Lock ();
 use Type::Tie ();
 
+our $LEVEL;
+our $DEFAULT_LEVEL = 2;
+
 sub import {
+    shift;
+    my %args = @_;
     my $caller = caller;
+
+    $LEVEL = exists $args{level} ? $args{level}
+           : exists $ENV{'PerlX::Declare::LEVEL'} ? $ENV{'PerlX::Declare::LEVEL'}
+           : $DEFAULT_LEVEL;
 
     feature->import::into($caller, 'state');
     Data::Lock->import::into($caller, 'dlock');
@@ -41,7 +50,7 @@ sub define_declaration {
     Carp::croak "illegal expression"               unless ($m->{eq} && $m->{assign}) or (!$m->{eq} && !$m->{assign});
 
     my $tv   = _parse_type_varlist($m->{type_varlist});
-    my $args = +{ declare => $declare, %$m, %$tv, use_type => _use_type() };
+    my $args = +{ declare => $declare, %$m, %$tv, level => $LEVEL };
 
     my $declaration = _render_declaration($args);
     substr($$ref, 0, length $m->{statement}) = $declaration;
@@ -55,38 +64,59 @@ sub define_const {
     Carp::croak "'const' declaration must be assigned" unless $m->{eq} && $m->{assign};
 
     my $tv   = _parse_type_varlist($m->{type_varlist});
-    my $args = +{ declare => 'my', %$m, %$tv, use_type => _use_type() };
+    my $args = +{ declare => 'my', %$m, %$tv, level => $LEVEL };
 
     my $declaration = _render_declaration($args);
     my $data_lock   = _render_data_lock($args);
     substr($$ref, 0, length $m->{statement}) = sprintf('%s; %s', $declaration, $data_lock);
 }
 
-sub _use_type { 1 }
-
 sub _render_declaration {
     my $args = shift;
     my @lines;
+    push @lines => _lines_dec($args);
+    push @lines => _lines_type_tie($args)                if $args->{level} == 2;
+    push @lines => "@{[__dec($args)]} = $args->{assign}" if $args->{assign};
+    push @lines => _lines_type_check($args)              if $args->{level} == 1;
+    return join ";", @lines;
+}
 
+sub __dec {
+    my $args = shift;
     my $dec = join ', ', map { $_->{var} } @{$args->{type_vars}};
     if ($args->{is_list_context}) {
         $dec = "($dec)"
     }
-    push @lines => "@{[$args->{declare}]} $dec@{[$args->{attributes}||'']}";
+    return $dec;
+}
 
-    if ($args->{use_type}) {
-        for my $type_var (@{$args->{type_vars}}) {
-            if ($type_var->{type}) {
-                push @lines => "ttie $type_var->{var}, $type_var->{type}";
-            }
-        }
+sub _lines_dec {
+    my $args = shift;
+    my @lines;
+    push @lines => sprintf('%s %s%s', $args->{declare}, __dec($args), $args->{attributes}||'');
+    return @lines;
+}
+
+sub _lines_type_tie {
+    my $args = shift;
+    my @lines;
+    for (@{$args->{type_vars}}) {
+        my ($type, $var) = ($_->{type}, $_->{var});
+        next unless $type;
+        push @lines => sprintf('ttie %s, %s', $var, $type);
     }
+    return @lines;
+}
 
-    if ($args->{assign}) {
-        push @lines => "$dec = $args->{assign}";
+sub _lines_type_check {
+    my $args = shift;
+    my @lines;
+    for (@{$args->{type_vars}}) {
+        my ($type, $var) = ($_->{type}, $_->{var});
+        next unless $type;
+        push @lines => sprintf('%s->get_message(%s) unless %s->check(%s)', $type, $var, $type, $var)
     }
-
-    return join ";", @lines;
+    return @lines;
 }
 
 sub _render_data_lock {
