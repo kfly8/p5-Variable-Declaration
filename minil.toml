@@ -1,5 +1,5 @@
 name = "PerlX-Declare"
-# badges = ["travis"]
+badges = ["travis"]
 authority="cpan:KFLY"
 
 module_maker="ModuleBuildTiny"
