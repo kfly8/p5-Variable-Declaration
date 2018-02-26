@@ -27,6 +27,7 @@ sub import {
     feature->import::into($caller, 'state');
     Data::Lock->import::into($caller, 'dlock');
     Type::Tie->import::into($caller, 'ttie');
+    Carp->import::into($caller);
 
     Keyword::Simple::define 'let'    => \&define_let;
     Keyword::Simple::define 'static' => \&define_static;
@@ -104,7 +105,7 @@ sub _lines_type_check {
     for (@{$args->{type_vars}}) {
         my ($type, $var) = ($_->{type}, $_->{var});
         next unless $type;
-        push @lines => sprintf('%s->get_message(%s) unless %s->check(%s)', $type, $var, $type, $var)
+        push @lines => sprintf('croak(%s->get_message(%s)) unless %s->check(%s)', $type, $var, $type, $var)
     }
     return @lines;
 }
