@@ -16,7 +16,14 @@ my @OK = (
 
     'static $foo'       => 'state $foo',
     'static ($foo)'     => 'state $foo', # equivalent to 'state ($foo)'
-    'static $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), state $foo', # equivalent to 'state $foo:Good'
+
+    # https://rt.perl.org/Public/Bug/Display.html?id=68658
+    $] =~ m{^5.012} ? (
+        'static $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), my $foo', # equivalent to 'state $foo:Good'
+    ) : (
+        'static $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), state $foo', # equivalent to 'state $foo:Good'
+    ),
+
     'static $foo = 123' => 'state $foo = 123',
     'static $foo = 0'   => 'state $foo = 0',
     'static Str $foo'   => 'state $foo;croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str',
