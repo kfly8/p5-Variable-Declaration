@@ -60,7 +60,7 @@ sub check_ok {
 
     my $code = eval "sub { $expression }";
     my $text = $deparse->coderef2text($code);
-    my $got = $text =~ s!^    !!mgr;
+    (my $got = $text) =~ s!^    !!mg;
     $got =~ s!\n!!g;
 
     note "'$expected'";
