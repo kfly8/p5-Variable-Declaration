@@ -1,4 +1,4 @@
-name = "PerlX-Declare"
+name = "Variable-Declaration"
 badges = ["travis"]
 authority="cpan:KFLY"
 

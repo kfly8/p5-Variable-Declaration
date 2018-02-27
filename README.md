@@ -1,10 +1,15 @@
+[![Build Status](https://travis-ci.org/kfly8/Variable-Declaration.svg?branch=master)](https://travis-ci.org/kfly8/Variable-Declaration)
 # NAME
 
-Variable::Declaration - It's new $module
+Variable::Declaration - add type declaration syntax
 
 # SYNOPSIS
 
     use Variable::Declaration;
+    use Types::Standard qw/Str/;
+
+    let Str $foo = 'foo';
+    const Str $bar = 'bar';
 
 # DESCRIPTION
 
