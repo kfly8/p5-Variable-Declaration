@@ -159,7 +159,8 @@ sub _parse_type_varlist {
     my $expression = shift;
 
     if ($expression =~ m{ (?<list>(?&PerlParenthesesList)) $PPR::GRAMMAR }x) {
-        my @list = split ',', $+{list} =~ s/\A\((.+)\)\Z/$1/r;
+        my ($type_vars) = $+{list} =~ m/\A\((.+)\)\Z/;
+        my @list = split ',', $type_vars;
         return +{
             is_list_context => 1,
             type_vars       => [ map { _parse_type_var($_) } @list ],
