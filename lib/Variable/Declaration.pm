@@ -202,19 +202,34 @@ __END__
 
 =head1 NAME
 
-Variable::Declaration - add type declaration syntax
+Variable::Declaration - declare with type constraint
 
 =head1 SYNOPSIS
 
     use Variable::Declaration;
-    use Types::Standard qw/Str/;
+    use Types::Standard '-all';
 
+    # variable declaration
+    let $foo;      # is equivalent to `my $foo`
+    static $bar;   # is equivalent to `state $bar`
+    const $baz;    # is equivalent to `my $baz;dlock($baz)`
+
+    # with type constraint
+
+    # init case
+    let Str $foo = {}; # => Reference {} did not pass type constraint "Str"
+
+    # store case
     let Str $foo = 'foo';
-    const Str $bar = 'bar';
+    $foo = {}; # => Reference {} did not pass type constraint "Str"
 
 =head1 DESCRIPTION
 
-Variable::Declaration is ...
+Variable::Declaration provides new variable declarations, i.e. `let`, `static`, and `const`.
+
+`let` is equivalent to `my` with type constraint.
+`static` is equivalent to `state` with type constraint.
+`const` is equivalent to `let` with data lock.
 
 =head1 LICENSE
 

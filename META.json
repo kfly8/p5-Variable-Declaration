@@ -1,5 +1,5 @@
 {
-   "abstract" : "add type declaration syntax",
+   "abstract" : "declare with type constraint",
    "author" : [
       "Kenta, Kobayashi <kentafly88@gmail.com>"
    ],
