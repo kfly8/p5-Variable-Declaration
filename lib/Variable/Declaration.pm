@@ -225,6 +225,8 @@ Variable::Declaration - declare with type constraint
 
 =head1 DESCRIPTION
 
+Warning: This module is still new and experimental. The API may change in future versions. The code may be buggy.
+
 Variable::Declaration provides new variable declarations, i.e. `let`, `static`, and `const`.
 
 `let` is equivalent to `my` with type constraint.
