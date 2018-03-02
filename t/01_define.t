@@ -8,6 +8,7 @@ use Variable::Declaration;
 my @OK = (
     # expression     => deparsed text
     'let $foo'       => 'my $foo',
+    '(let $foo)'     => '(my $foo)',
     'let ($foo)'     => 'my $foo', # equivalent to 'my ($foo)'
     'let $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), my $foo', # equivalent to 'my $foo:Good'
     'let $foo = 123' => 'my $foo = 123',
@@ -63,17 +64,23 @@ my @NG = (
 
 sub check_ok {
     my ($expression, $expected) = @_;
-    my $deparse = B::Deparse->new();
 
     my $code = eval "sub { $expression }";
-    my $text = $deparse->coderef2text($code);
-    (my $got = $text) =~ s!^    !!mg;
-    $got =~ s!\n!!g;
-
     note "'$expected'";
-    note $text;
-    my $e = quotemeta $expected;
-    ok $got =~ m!$e!;
+    if ($@) {
+        note $@;
+        fail;
+    }
+    else {
+        my $deparse = B::Deparse->new();
+        my $text = $deparse->coderef2text($code);
+        (my $got = $text) =~ s!^    !!mg;
+        $got =~ s!\n!!g;
+
+        note $text;
+        my $e = quotemeta $expected;
+        ok $got =~ m!$e!;
+    }
 }
 
 sub check_ng {
@@ -83,15 +90,15 @@ sub check_ng {
     note "'$expected'";
     if ($@) {
         note $@;
+        my $e = quotemeta $expected;
+        ok $@ =~ m!$e!;
     }
     else {
         my $deparse = B::Deparse->new();
         my $text = $deparse->coderef2text($code);
         note $text;
+        fail;
     }
-
-    my $e = quotemeta $expected;
-    ok $@ =~ m!$e!;
 }
 
 sub Str() { ;; }
