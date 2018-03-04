@@ -8,7 +8,6 @@ use Variable::Declaration;
 my @OK = (
     # expression     => deparsed text
     'let $foo'       => 'my $foo',
-    '(let $foo)'     => '(my $foo)',
     'let ($foo)'     => 'my $foo', # equivalent to 'my ($foo)'
     'let $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), my $foo', # equivalent to 'my $foo:Good'
     'let $foo = 123' => 'my $foo = 123',
@@ -32,6 +31,10 @@ my @OK = (
     'const $foo = 123'           => 'my $foo = 123;dlock($foo)',
     'const $foo = 0'             => 'my $foo = 0;dlock($foo)',
     'const Str $foo = \'hello\'' => 'my $foo = \'hello\';croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str;dlock($foo)',
+);
+
+my @TODO = (
+    'issue #2' => ['(let $foo)' => '(my $foo)'],
 );
 
 my @NG = (
@@ -83,6 +86,14 @@ sub check_ok {
     }
 }
 
+sub check_todo {
+    my ($message, $data) = @_;
+    TODO: {
+        local $TODO = $message;
+        check_ok(@$data);
+    };
+}
+
 sub check_ng {
     my ($expression, $expected) = @_;
 
@@ -106,6 +117,12 @@ sub Str() { ;; }
 subtest 'case ok' => sub {
     while (@OK) {
         check_ok(shift @OK, shift @OK)
+    }
+};
+
+subtest 'case todo' => sub {
+    while (@TODO) {
+        check_todo(shift @TODO, shift @TODO)
     }
 };
 
