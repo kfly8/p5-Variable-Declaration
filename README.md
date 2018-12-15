@@ -1,28 +1,32 @@
-[![Build Status](https://travis-ci.org/kfly8/Variable-Declaration.svg?branch=master)](https://travis-ci.org/kfly8/Variable-Declaration)
+[![Build Status](https://travis-ci.org/kfly8/Variable-Declaration.svg?branch=master)](https://travis-ci.org/kfly8/Variable-Declaration) [![Coverage Status](https://img.shields.io/coveralls/kfly8/Variable-Declaration/master.svg?style=flat)](https://coveralls.io/r/kfly8/Variable-Declaration?branch=master) [![MetaCPAN Release](https://badge.fury.io/pl/Variable-Declaration.svg)](https://metacpan.org/release/Variable-Declaration)
 # NAME
 
 Variable::Declaration - declare with type constraint
 
 # SYNOPSIS
 
-    use Variable::Declaration;
-    use Types::Standard '-all';
+```perl
+use Variable::Declaration;
+use Types::Standard '-all';
 
-    # variable declaration
-    let $foo;      # is equivalent to `my $foo`
-    static $bar;   # is equivalent to `state $bar`
-    const $baz;    # is equivalent to `my $baz;dlock($baz)`
+# variable declaration
+let $foo;      # is equivalent to `my $foo`
+static $bar;   # is equivalent to `state $bar`
+const $baz;    # is equivalent to `my $baz;dlock($baz)`
 
-    # with type constraint
+# with type constraint
 
-    # init case
-    let Str $foo = {}; # => Reference {} did not pass type constraint "Str"
+# init case
+let Str $foo = {}; # => Reference {} did not pass type constraint "Str"
 
-    # store case
-    let Str $foo = 'foo';
-    $foo = {}; # => Reference {} did not pass type constraint "Str"
+# store case
+let Str $foo = 'foo';
+$foo = {}; # => Reference {} did not pass type constraint "Str"
+```
 
 # DESCRIPTION
+
+Warning: This module is still new and experimental. The API may change in future versions. The code may be buggy.
 
 Variable::Declaration provides new variable declarations, i.e. \`let\`, \`static\`, and \`const\`.
 
