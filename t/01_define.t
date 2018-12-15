@@ -9,7 +9,13 @@ my @OK = (
     # expression     => deparsed text
     'let $foo'       => 'my $foo',
     'let ($foo)'     => 'my $foo', # equivalent to 'my ($foo)'
-    'let $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), my $foo', # equivalent to 'my $foo:Good'
+
+    $] > 5.026003 ? (
+        'let $foo:Good' => 'my $foo :Good',
+    ) : (
+        'let $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), my $foo', # equivalent to 'my $foo:Good'
+    ),
+
     'let $foo = 123' => 'my $foo = 123',
     'let $foo = 0'   => 'my $foo = 0',
     'let Str $foo'   => 'my $foo;croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str',
@@ -20,14 +26,16 @@ my @OK = (
     # https://rt.perl.org/Public/Bug/Display.html?id=68658
     $] =~ m{^5.012} ? (
         'static $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), my $foo', # equivalent to 'state $foo:Good'
+    ) : $] > 5.026003 ? (
+        'static $foo:Good'  => 'state $foo :Good',
     ) : (
         'static $foo:Good'  => '\'attributes\'->import(\'main\', \$foo, \'Good\'), state $foo', # equivalent to 'state $foo:Good'
     ),
-
+    
     'static $foo = 123' => 'state $foo = 123',
     'static $foo = 0'   => 'state $foo = 0',
     'static Str $foo'   => 'state $foo;croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str',
-
+    
     'const $foo = 123'           => 'my $foo = 123;dlock($foo)',
     'const $foo = 0'             => 'my $foo = 0;dlock($foo)',
     'const Str $foo = \'hello\'' => 'my $foo = \'hello\';croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str;dlock($foo)',
@@ -69,8 +77,9 @@ sub check_ok {
     my ($expression, $expected) = @_;
 
     my $code = eval "sub { $expression }";
-    note "'$expected'";
+    note "EXPECTED: '$expected'";
     if ($@) {
+        note 'EVAL FAILED';
         note $@;
         fail;
     }
@@ -80,7 +89,7 @@ sub check_ok {
         (my $got = $text) =~ s!^    !!mg;
         $got =~ s!\n!!g;
 
-        note $text;
+        note "GOT:$text";
         my $e = quotemeta $expected;
         ok $got =~ m!$e!;
     }
