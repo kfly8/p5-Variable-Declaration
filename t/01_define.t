@@ -36,9 +36,9 @@ my @OK = (
     'static $foo = 0'   => 'state $foo = 0',
     'static Str $foo'   => 'state $foo;Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str',
     
-    'const $foo = 123'           => 'my $foo = 123;dlock($foo)',
-    'const $foo = 0'             => 'my $foo = 0;dlock($foo)',
-    'const Str $foo = \'hello\'' => 'my $foo = \'hello\';Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str;dlock($foo)',
+    'const $foo = 123'           => 'my $foo = 123;Variable::Declaration::_dlock($foo)',
+    'const $foo = 0'             => 'my $foo = 0;Variable::Declaration::_dlock($foo)',
+    'const Str $foo = \'hello\'' => 'my $foo = \'hello\';Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str;Variable::Declaration::_dlock($foo)',
 );
 
 my @TODO = (

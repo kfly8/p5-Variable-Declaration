@@ -26,7 +26,6 @@ sub import {
 
     feature->import::into($caller, 'state');
     Type::Tie->import::into($caller, 'ttie');
-    Data::Lock->import::into($caller, 'dlock');
 
     Keyword::Simple::define 'let'    => \&define_let;
     Keyword::Simple::define 'static' => \&define_static;
@@ -54,6 +53,8 @@ sub define_declaration {
 }
 
 sub _croak { Carp::croak @_ }
+
+sub _dlock { Data::Lock::dlock @_ }
 
 sub _valid {
     my ($declaration, $match) = @_;
@@ -122,7 +123,7 @@ sub _lines_data_lock {
     my $args = shift;
     my @lines;
     for my $type_var (@{$args->{type_vars}}) {
-        push @lines => "dlock($type_var->{var})";
+        push @lines => "Variable::Declaration::_dlock($type_var->{var})";
     }
     return @lines;
 }

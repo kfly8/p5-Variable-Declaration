@@ -94,6 +94,15 @@ my @OK = (
         assign           => 123,
         level            => 1,
     } => 'my $foo = 123;Variable::Declaration::_croak(Int->get_message($foo)) unless Int->check($foo)', "level => 1",
+    +{
+        declaration      => 'const',
+        perl_declaration => 'my',
+        is_list_context  => 0,
+        type_vars        => [ { var => '$foo' } ],
+        attributes       => undef,
+        assign           => 123,
+        level            => 1,
+    } => 'my $foo = 123;Variable::Declaration::_dlock($foo)', "data lock",
 );
 
 sub check {
