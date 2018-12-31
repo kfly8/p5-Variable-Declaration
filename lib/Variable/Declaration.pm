@@ -25,7 +25,6 @@ sub import {
            : $DEFAULT_LEVEL;
 
     feature->import::into($caller, 'state');
-    Type::Tie->import::into($caller, 'ttie');
 
     Keyword::Simple::define 'let'    => \&define_let;
     Keyword::Simple::define 'static' => \&define_static;
@@ -55,6 +54,8 @@ sub define_declaration {
 sub _croak { Carp::croak @_ }
 
 sub _dlock { Data::Lock::dlock @_ }
+
+sub _ttie { Type::Tie::ttie @_ }
 
 sub _valid {
     my ($declaration, $match) = @_;
@@ -103,7 +104,7 @@ sub _lines_type_tie {
     for (@{$args->{type_vars}}) {
         my ($type, $var) = ($_->{type}, $_->{var});
         next unless $type;
-        push @lines => sprintf('ttie %s, %s', $var, $type);
+        push @lines => sprintf('Variable::Declaration::_ttie(%s, %s, %s)', $var, $type, $var);
     }
     return @lines;
 }

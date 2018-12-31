@@ -18,7 +18,7 @@ my @OK = (
 
     'let $foo = 123' => 'my $foo = 123',
     'let $foo = 0'   => 'my $foo = 0',
-    'let Str $foo'   => 'my $foo;Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str',
+    'let Str $foo'   => 'my $foo;Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);Variable::Declaration::_ttie($foo, Str, $foo)',
 
     'static $foo'       => 'state $foo',
     'static ($foo)'     => 'state $foo', # equivalent to 'state ($foo)'
@@ -34,11 +34,11 @@ my @OK = (
     
     'static $foo = 123' => 'state $foo = 123',
     'static $foo = 0'   => 'state $foo = 0',
-    'static Str $foo'   => 'state $foo;Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str',
+    'static Str $foo'   => 'state $foo;Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);Variable::Declaration::_ttie($foo, Str, $foo)',
     
     'const $foo = 123'           => 'my $foo = 123;Variable::Declaration::_dlock($foo)',
     'const $foo = 0'             => 'my $foo = 0;Variable::Declaration::_dlock($foo)',
-    'const Str $foo = \'hello\'' => 'my $foo = \'hello\';Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str;Variable::Declaration::_dlock($foo)',
+    'const Str $foo = \'hello\'' => 'my $foo = \'hello\';Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);Variable::Declaration::_ttie($foo, Str, $foo);Variable::Declaration::_dlock($foo)',
 );
 
 my @TODO = (
