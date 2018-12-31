@@ -18,7 +18,7 @@ my @OK = (
 
     'let $foo = 123' => 'my $foo = 123',
     'let $foo = 0'   => 'my $foo = 0',
-    'let Str $foo'   => 'my $foo;croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str',
+    'let Str $foo'   => 'my $foo;Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str',
 
     'static $foo'       => 'state $foo',
     'static ($foo)'     => 'state $foo', # equivalent to 'state ($foo)'
@@ -34,11 +34,11 @@ my @OK = (
     
     'static $foo = 123' => 'state $foo = 123',
     'static $foo = 0'   => 'state $foo = 0',
-    'static Str $foo'   => 'state $foo;croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str',
+    'static Str $foo'   => 'state $foo;Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str',
     
     'const $foo = 123'           => 'my $foo = 123;dlock($foo)',
     'const $foo = 0'             => 'my $foo = 0;dlock($foo)',
-    'const Str $foo = \'hello\'' => 'my $foo = \'hello\';croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str;dlock($foo)',
+    'const Str $foo = \'hello\'' => 'my $foo = \'hello\';Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);ttie $foo, Str;dlock($foo)',
 );
 
 my @TODO = (
@@ -148,8 +148,8 @@ subtest 'level 0' => sub {
 
 subtest 'level 1' => sub {
     Variable::Declaration->import(level => 1);
-    check_ok('let Str $foo', 'my $foo;croak(Str->get_message($foo)) unless Str->check($foo)');
-    check_ok('let Str $foo = \'hello\'', 'my $foo = \'hello\';croak(Str->get_message($foo)) unless Str->check($foo)');
+    check_ok('let Str $foo', 'my $foo;Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo)');
+    check_ok('let Str $foo = \'hello\'', 'my $foo = \'hello\';Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo)');
 };
 
 done_testing;

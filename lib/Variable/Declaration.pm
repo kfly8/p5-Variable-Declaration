@@ -25,7 +25,6 @@ sub import {
            : $DEFAULT_LEVEL;
 
     feature->import::into($caller, 'state');
-    Carp->import::into($caller);
     Type::Tie->import::into($caller, 'ttie');
     Data::Lock->import::into($caller, 'dlock');
 
@@ -54,19 +53,21 @@ sub define_declaration {
     substr($$ref, 0, length $match->{statement}) = _render_declaration($args);
 }
 
+sub _croak { Carp::croak @_ }
+
 sub _valid {
     my ($declaration, $match) = @_;
 
-    Carp::croak "variable declaration is required'"
+    _croak "variable declaration is required'"
         unless $match->{type_varlist};
 
     my ($eq, $assign) = ($match->{eq}, $match->{assign});
     if ($declaration eq 'const') {
-        Carp::croak "'const' declaration must be assigned"
+        _croak "'const' declaration must be assigned"
             unless defined $eq && defined $assign;
     }
     else {
-        Carp::croak "illegal expression"
+        _croak "illegal expression"
             unless (defined $eq && defined $assign) or (!defined $eq && !defined $assign);
     }
 
@@ -112,7 +113,7 @@ sub _lines_type_check {
     for (@{$args->{type_vars}}) {
         my ($type, $var) = ($_->{type}, $_->{var});
         next unless $type;
-        push @lines => sprintf('croak(%s->get_message(%s)) unless %s->check(%s)', $type, $var, $type, $var)
+        push @lines => sprintf('Variable::Declaration::_croak(%s->get_message(%s)) unless %s->check(%s)', $type, $var, $type, $var)
     }
     return @lines;
 }
