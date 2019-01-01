@@ -5,7 +5,7 @@ requires 'PPR';
 requires 'Carp';
 requires 'Import::Into';
 requires 'Data::Lock';
-requires 'Type::Tie';
+requires 'Type::Tie', '0.010';
 
 on 'test' => sub {
     requires 'Test::More', '0.98';
