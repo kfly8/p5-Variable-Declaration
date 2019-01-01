@@ -2,6 +2,9 @@ Revision history for Perl extension Variable-Declaration
 
 {{$NEXT}}
 
+0.03 2019-01-01T22:46:21Z
+    - specify Type::Tie version #6
+
 0.02 2019-01-01T14:22:50Z
     - fixed test #3
     - improved import modules #4

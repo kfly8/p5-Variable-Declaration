@@ -47,7 +47,7 @@
             "Import::Into" : "0",
             "Keyword::Simple" : "0",
             "PPR" : "0",
-            "Type::Tie" : "0",
+            "Type::Tie" : "0.010",
             "perl" : "v5.12.0"
          }
       },
@@ -69,7 +69,7 @@
          "web" : "https://github.com/kfly8/Variable-Declaration"
       }
    },
-   "version" : "0.02",
+   "version" : "0.03",
    "x_authority" : "cpan:KFLY",
    "x_contributors" : [
       "Kenta Kobayashi <kentafly88@gmail.com>"
