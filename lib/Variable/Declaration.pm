@@ -25,9 +25,6 @@ sub import {
            : $DEFAULT_LEVEL;
 
     feature->import::into($caller, 'state');
-    Carp->import::into($caller);
-    Type::Tie->import::into($caller, 'ttie');
-    Data::Lock->import::into($caller, 'dlock');
 
     Keyword::Simple::define 'let'    => \&define_let;
     Keyword::Simple::define 'static' => \&define_static;
@@ -54,19 +51,28 @@ sub define_declaration {
     substr($$ref, 0, length $match->{statement}) = _render_declaration($args);
 }
 
+sub croak { Carp::croak @_ }
+
+sub data_lock { Data::Lock::dlock @_ }
+
+sub type_tie(\[$@%]@);
+{
+    *type_tie = \&Type::Tie::ttie;
+}
+
 sub _valid {
     my ($declaration, $match) = @_;
 
-    Carp::croak "variable declaration is required'"
+    croak "variable declaration is required'"
         unless $match->{type_varlist};
 
     my ($eq, $assign) = ($match->{eq}, $match->{assign});
     if ($declaration eq 'const') {
-        Carp::croak "'const' declaration must be assigned"
+        croak "'const' declaration must be assigned"
             unless defined $eq && defined $assign;
     }
     else {
-        Carp::croak "illegal expression"
+        croak "illegal expression"
             unless (defined $eq && defined $assign) or (!defined $eq && !defined $assign);
     }
 
@@ -101,7 +107,7 @@ sub _lines_type_tie {
     for (@{$args->{type_vars}}) {
         my ($type, $var) = ($_->{type}, $_->{var});
         next unless $type;
-        push @lines => sprintf('ttie %s, %s', $var, $type);
+        push @lines => sprintf('Variable::Declaration::type_tie(%s, %s, %s)', $var, $type, $var);
     }
     return @lines;
 }
@@ -112,7 +118,7 @@ sub _lines_type_check {
     for (@{$args->{type_vars}}) {
         my ($type, $var) = ($_->{type}, $_->{var});
         next unless $type;
-        push @lines => sprintf('croak(%s->get_message(%s)) unless %s->check(%s)', $type, $var, $type, $var)
+        push @lines => sprintf('Variable::Declaration::croak(%s->get_message(%s)) unless %s->check(%s)', $type, $var, $type, $var)
     }
     return @lines;
 }
@@ -121,7 +127,7 @@ sub _lines_data_lock {
     my $args = shift;
     my @lines;
     for my $type_var (@{$args->{type_vars}}) {
-        push @lines => "dlock($type_var->{var})";
+        push @lines => "Variable::Declaration::data_lock($type_var->{var})";
     }
     return @lines;
 }
