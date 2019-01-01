@@ -2,6 +2,11 @@ Revision history for Perl extension Variable-Declaration
 
 {{$NEXT}}
 
+0.02 2019-01-01T14:22:50Z
+    - fixed test #3
+    - improved import modules #4
+    - added test and docs about LEVEL #5
+
 0.01 2018-02-28T09:40:17Z
 
     - original version
