@@ -48,7 +48,7 @@ my @OK = (
         attributes       => undef,
         assign           => undef,
         level            => $Variable::Declaration::DEFAULT_LEVEL,
-    } => 'my $foo;Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);Variable::Declaration::_ttie($foo, Str, $foo)', "type => 'Str'",
+    } => 'my $foo;Variable::Declaration::croak(Str->get_message($foo)) unless Str->check($foo);Variable::Declaration::type_tie($foo, Str, $foo)', "type => 'Str'",
     +{
         declaration      => 'let',
         perl_declaration => 'my',
@@ -66,7 +66,7 @@ my @OK = (
         attributes       => undef,
         assign           => undef,
         level            => $Variable::Declaration::DEFAULT_LEVEL,
-    } => 'my ($foo, $bar);Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);Variable::Declaration::_ttie($foo, Str, $foo)', "type_vars > 1 && type => 'Str'",
+    } => 'my ($foo, $bar);Variable::Declaration::croak(Str->get_message($foo)) unless Str->check($foo);Variable::Declaration::type_tie($foo, Str, $foo)', "type_vars > 1 && type => 'Str'",
     +{
         declaration      => 'let',
         perl_declaration => 'my',
@@ -75,7 +75,7 @@ my @OK = (
         attributes       => undef,
         assign           => undef,
         level            => $Variable::Declaration::DEFAULT_LEVEL,
-    } => 'my ($foo, $bar);Variable::Declaration::_croak(Str->get_message($foo)) unless Str->check($foo);Variable::Declaration::_croak(Int8->get_message($bar)) unless Int8->check($bar);Variable::Declaration::_ttie($foo, Str, $foo);Variable::Declaration::_ttie($bar, Int8, $bar)', "type_vars > 1 && set types",
+    } => 'my ($foo, $bar);Variable::Declaration::croak(Str->get_message($foo)) unless Str->check($foo);Variable::Declaration::croak(Int8->get_message($bar)) unless Int8->check($bar);Variable::Declaration::type_tie($foo, Str, $foo);Variable::Declaration::type_tie($bar, Int8, $bar)', "type_vars > 1 && set types",
     +{
         declaration      => 'let',
         perl_declaration => 'my',
@@ -93,7 +93,7 @@ my @OK = (
         attributes       => undef,
         assign           => 123,
         level            => 1,
-    } => 'my $foo = 123;Variable::Declaration::_croak(Int->get_message($foo)) unless Int->check($foo)', "level => 1",
+    } => 'my $foo = 123;Variable::Declaration::croak(Int->get_message($foo)) unless Int->check($foo)', "level => 1",
     +{
         declaration      => 'const',
         perl_declaration => 'my',
@@ -102,7 +102,7 @@ my @OK = (
         attributes       => undef,
         assign           => 123,
         level            => 1,
-    } => 'my $foo = 123;Variable::Declaration::_dlock($foo)', "data lock",
+    } => 'my $foo = 123;Variable::Declaration::data_lock($foo)', "data lock",
 );
 
 sub check {

@@ -51,25 +51,28 @@ sub define_declaration {
     substr($$ref, 0, length $match->{statement}) = _render_declaration($args);
 }
 
-sub _croak { Carp::croak @_ }
+sub croak { Carp::croak @_ }
 
-sub _dlock { Data::Lock::dlock @_ }
+sub data_lock { Data::Lock::dlock @_ }
 
-sub _ttie { Type::Tie::ttie @_ }
+sub type_tie(\[$@%]@);
+{
+    *type_tie = \&Type::Tie::ttie;
+}
 
 sub _valid {
     my ($declaration, $match) = @_;
 
-    _croak "variable declaration is required'"
+    croak "variable declaration is required'"
         unless $match->{type_varlist};
 
     my ($eq, $assign) = ($match->{eq}, $match->{assign});
     if ($declaration eq 'const') {
-        _croak "'const' declaration must be assigned"
+        croak "'const' declaration must be assigned"
             unless defined $eq && defined $assign;
     }
     else {
-        _croak "illegal expression"
+        croak "illegal expression"
             unless (defined $eq && defined $assign) or (!defined $eq && !defined $assign);
     }
 
@@ -104,7 +107,7 @@ sub _lines_type_tie {
     for (@{$args->{type_vars}}) {
         my ($type, $var) = ($_->{type}, $_->{var});
         next unless $type;
-        push @lines => sprintf('Variable::Declaration::_ttie(%s, %s, %s)', $var, $type, $var);
+        push @lines => sprintf('Variable::Declaration::type_tie(%s, %s, %s)', $var, $type, $var);
     }
     return @lines;
 }
@@ -115,7 +118,7 @@ sub _lines_type_check {
     for (@{$args->{type_vars}}) {
         my ($type, $var) = ($_->{type}, $_->{var});
         next unless $type;
-        push @lines => sprintf('Variable::Declaration::_croak(%s->get_message(%s)) unless %s->check(%s)', $type, $var, $type, $var)
+        push @lines => sprintf('Variable::Declaration::croak(%s->get_message(%s)) unless %s->check(%s)', $type, $var, $type, $var)
     }
     return @lines;
 }
@@ -124,7 +127,7 @@ sub _lines_data_lock {
     my $args = shift;
     my @lines;
     for my $type_var (@{$args->{type_vars}}) {
-        push @lines => "Variable::Declaration::_dlock($type_var->{var})";
+        push @lines => "Variable::Declaration::data_lock($type_var->{var})";
     }
     return @lines;
 }
