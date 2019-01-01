@@ -276,12 +276,14 @@ Finally, set C<$Variable::Declaration::DEFAULT_LEVEL>.
 
 =head1 LICENSE
 
+Copyright (C) kfly8.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =head1 AUTHOR
 
+kfly8 E<lt>kfly@cpan.orgE<gt>
 
 =cut
 
