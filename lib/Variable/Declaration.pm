@@ -233,22 +233,55 @@ Variable::Declaration - declare with type constraint
 
 Warning: This module is still new and experimental. The API may change in future versions. The code may be buggy.
 
-Variable::Declaration provides new variable declarations, i.e. `let`, `static`, and `const`.
+Variable::Declaration provides new variable declarations, i.e. C<let>, C<static>, and C<const>.
 
-`let` is equivalent to `my` with type constraint.
-`static` is equivalent to `state` with type constraint.
-`const` is equivalent to `let` with data lock.
+C<let> is equivalent to C<my> with type constraint.
+C<static> is equivalent to C<state> with type constraint.
+C<const> is equivalent to C<let> with data lock.
+
+=head2 LEVEL
+
+You can specify the LEVEL in three stages of checking the specified type:
+
+C<LEVEL 0> does not check type,
+C<LEVEL 1> check type only at initializing variables,
+C<LEVEL 2> check type at initializing variables and reassignment.
+C<LEVEL 2> is default level.
+
+    # CASE: LEVEL 2 (DEFAULT)
+    use Variable::Declaration level => 2;
+
+    let Int $s = 'foo'; # => ERROR!
+    let Int $s = 123;
+    $s = 'bar'; # => ERROR!
+
+    # CASE: LEVEL 1
+    use Variable::Declaration level => 1;
+
+    let Int $s = 'foo'; # => ERROR!
+    let Int $s = 123;
+    $s = 'bar'; # => NO error!
+
+    # CASE: LEVEL 0
+    use Variable::Declaration level => 0;
+
+    let Int $s = 'foo'; # => NO error!
+    let Int $s = 123;
+    $s = 'bar'; # => NO error!
+
+There are three ways of specifying LEVEL.
+First, as shown in the example above, pass to the arguments of the module.
+Next, set environment variable C<$ENV{Variable::Declaration::LEVEL}>.
+Finally, set C<$Variable::Declaration::DEFAULT_LEVEL>.
 
 =head1 LICENSE
 
-Copyright (C) Kenta, Kobayashi.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =head1 AUTHOR
 
-Kenta, Kobayashi E<lt>kentafly88@gmail.comE<gt>
 
 =cut
 

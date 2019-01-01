@@ -30,9 +30,18 @@ Warning: This module is still new and experimental. The API may change in future
 
 Variable::Declaration provides new variable declarations, i.e. \`let\`, \`static\`, and \`const\`.
 
-\`let\` is equivalent to \`my\` with type constraint.
-\`static\` is equivalent to \`state\` with type constraint.
-\`const\` is equivalent to \`let\` with data lock.
+`let` is equivalent to `my` with type constraint.
+`static` is equivalent to `state` with type constraint.
+`const` is equivalent to `let` with data lock.
+
+## LEVEL
+
+You can specify the LEVEL in three stages of checking the specified type,
+doing nothing, only at initialization, and also at re-assignment.
+
+```perl
+use Variable::Declaration level => 0;
+```
 
 # LICENSE
 
