@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/kfly8/Variable-Declaration.svg?branch=master)](https://travis-ci.org/kfly8/Variable-Declaration) [![Coverage Status](https://img.shields.io/coveralls/kfly8/Variable-Declaration/master.svg?style=flat)](https://coveralls.io/r/kfly8/Variable-Declaration?branch=master) [![MetaCPAN Release](https://badge.fury.io/pl/Variable-Declaration.svg)](https://metacpan.org/release/Variable-Declaration)
+[![Build Status](https://travis-ci.org/kfly8/p5-Variable-Declaration.svg?branch=master)](https://travis-ci.org/kfly8/p5-Variable-Declaration) [![Coverage Status](https://img.shields.io/coveralls/kfly8/p5-Variable-Declaration/master.svg?style=flat)](https://coveralls.io/r/kfly8/p5-Variable-Declaration?branch=master) [![MetaCPAN Release](https://badge.fury.io/pl/Variable-Declaration.svg)](https://metacpan.org/release/Variable-Declaration)
 # NAME
 
 Variable::Declaration - declare with type constraint
