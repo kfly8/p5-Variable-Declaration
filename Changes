@@ -2,6 +2,9 @@ Revision history for Perl extension Variable-Declaration
 
 {{$NEXT}}
 
+0.04 2019-01-02T14:02:10Z
+    - specify Keyword::Simple, Carp version
+
 0.03 2019-01-01T22:46:21Z
     - specify Type::Tie version #6
 
