@@ -1,8 +1,8 @@
 requires 'perl', '5.12.0';
 
-requires 'Keyword::Simple';
+requires 'Keyword::Simple', '0.04';
 requires 'PPR';
-requires 'Carp';
+requires 'Carp', '1.40';
 requires 'Import::Into';
 requires 'Data::Lock';
 requires 'Type::Tie', '0.010';
