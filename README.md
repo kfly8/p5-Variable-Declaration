@@ -34,6 +34,21 @@ Variable::Declaration provides new variable declarations, i.e. `let`, `static`, 
 `static` is equivalent to `state` with type constraint.
 `const` is equivalent to `let` with data lock.
 
+## INTROSPECTION
+
+The function Variable::Declaration::info lets you introspect return values like [Variable::Declaration::Info](https://metacpan.org/pod/Variable::Declaration::Info):
+
+```perl
+use Variable::Declaration;
+use Types::Standard -types;
+
+let Str $foo = "HELLO";
+my $vinfo = Variable::Declaration::info \$foo;
+
+$vinfo->declaration; # let
+$vinfo->type; # Str
+```
+
 ## LEVEL
 
 You can specify the LEVEL in three stages of checking the specified type:
