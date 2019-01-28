@@ -19,8 +19,7 @@ my @OK = (
         $] > 5.026003 ? (
             q!my $foo :Good;!,
         ) : (
-            q!attributes->import('main', \$foo, 'Good'),!,
-            q!my $foo;!,
+            q!'attributes'->import('main', \$foo, 'Good'), my $foo;!,
         ),
         q!Variable::Declaration::register_info(\$foo, {'declaration', 'let', 'attributes', ':Good', 'type', undef});!,
     ],
@@ -49,13 +48,11 @@ my @OK = (
     'static $foo:Good'  => [
         $] =~ m{^5.012} ? (
             # https://rt.perl.org/Public/Bug/Display.html?id=68658
-            q!'attributes'->import('main', \$foo, 'Good'),!,
-            q!my $foo;!, # equivalent to 'state $foo:Good'
+            q!'attributes'->import('main', \$foo, 'Good'), my $foo;!,
         ) : $] > 5.026003 ? (
             q!state $foo :Good;!,
         ) : (
-            q!'attributes'->import('main', \$foo, 'Good'),!,
-            q!state $foo;!, # equivalent to 'state $foo:Good'
+            q!'attributes'->import('main', \$foo, 'Good'), state $foo;!,
         ),
         q!Variable::Declaration::register_info(\$foo, {'declaration', 'static', 'attributes', ':Good', 'type', undef});!,
     ],
@@ -94,7 +91,11 @@ my @OK = (
 );
 
 my @TODO = (
-    'issue #2' => ['(let $foo)' => ['(my $foo)']],
+    'issue #2' =>
+        ['(let $foo)' => [
+            q!(my $foo);!,
+            q!Variable::Declaration::register_info(\$foo, {'declaration', 'let', 'attributes', undef, 'type', undef});!,
+        ]],
 );
 
 my @NG = (
