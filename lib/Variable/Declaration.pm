@@ -68,7 +68,6 @@ sub info {
     require Variable::Declaration::Info;
     Variable::Declaration::Info->new(
         declaration      => $info->{declaration},
-        perl_declaration => $info->{perl_declaration},
         type             => $info->{type},
         attributes       => $info->{attributes},
     )
@@ -78,7 +77,6 @@ sub register_info {
     my ($variable_ref, $info) = @_;
     $metadata{$variable_ref} = {
         declaration      => $info->{declaration},
-        perl_declaration => $info->{perl_declaration},
         type             => $info->{type},
         attributes       => $info->{attributes},
     };
@@ -161,11 +159,10 @@ sub _lines_register_info {
     my $args = shift;
     my @lines;
     for my $type_var (@{$args->{type_vars}}) {
-        push @lines => sprintf("Variable::Declaration::register_info(\\%s, { declaration => '%s', perl_declaration => '%s', attributes => '%s', type => %s })",
+        push @lines => sprintf("Variable::Declaration::register_info(\\%s, { declaration => '%s', attributes => %s, type => %s })",
             $type_var->{var},
             $args->{declaration},
-            $args->{perl_declaration},
-            ($args->{attributes} or 'undef'),
+            ($args->{attributes} ? "'$args->{attributes}'" : 'undef'),
             ($type_var->{type} or 'undef'),
         );
     }

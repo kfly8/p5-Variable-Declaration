@@ -9,10 +9,9 @@ sub new {
     bless \%args => $class;
 }
 
-sub declaration      { $_[0]->{declaration} }
-sub perl_declaration { $_[0]->{perl_declaration} }
-sub type             { $_[0]->{type} }
-sub attributes       { $_[0]->{attributes} }
+sub declaration { $_[0]->{declaration} }
+sub type        { $_[0]->{type} }
+sub attributes  { $_[0]->{attributes} }
 
 1;
 __END__
@@ -48,10 +47,6 @@ attributes of variable
 =head2 $info->declaration
 
 variable is defined by this declaration
-
-=head2 $info->perl_declaration
-
-variable is defined by this declaration internally
 
 =head1 SEE ALSO
 
