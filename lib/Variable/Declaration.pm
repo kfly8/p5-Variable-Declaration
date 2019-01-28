@@ -226,7 +226,7 @@ sub _parse_type_var {
     return unless $expression =~ m{
         \A
         (?&PerlOWS)
-        (?<type>(?&PerlIdentifier))? (?&PerlOWS)
+        (?<type>(?&PerlIdentifier) | (?&PerlCall) )? (?&PerlOWS)
         (?<var>(?:(?&PerlVariable)))
         \Z
         $PPR::GRAMMAR

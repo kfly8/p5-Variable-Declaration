@@ -11,10 +11,26 @@ my @OK = (
     '$foo  '   => [undef, '$foo  '],
     '  $foo  ' => [undef, '$foo  '],
 
-    '$Foo::Bar::foo' => [undef, '$Foo::Bar::foo'],
+    '$Foo::Bar::foo'
+    => [undef, '$Foo::Bar::foo'],
 
-    'Str $foo'      => ['Str', '$foo'],
-    'Int8 $foo'     => ['Int8', '$foo'],
+    'Str $foo'
+    => ['Str', '$foo'],
+
+    'Int8 $foo'
+    => ['Int8', '$foo'],
+
+    'ArrayRef[Int] $foo'
+    => ['ArrayRef[Int] ', '$foo'],
+
+    'ArrayRef[ArrayRef[Int]] $foo'
+    => ['ArrayRef[ArrayRef[Int]] ', '$foo'],
+
+    'Map[Str, Int] $foo'
+    => ['Map[Str, Int] ', '$foo'],
+
+    'Dict[name => Str, id => Optional[Int]] $foo'
+    => ['Dict[name => Str, id => Optional[Int]] ', '$foo'],
 
     '  Str $foo'    => ['Str', '$foo'],
     'Str  $foo'     => ['Str', '$foo'],
