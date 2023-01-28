@@ -130,6 +130,7 @@ sub check_ok {
     my ($expression, $expected_arrayref) = @_;
 
     my $expected = join '', @$expected_arrayref;
+    note "EXPRESSION: $expression";
     note "EXPECTED:";
     note join "", map { "\t$_\n" } @$expected_arrayref;
     local $@;
