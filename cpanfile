@@ -9,5 +9,6 @@ requires 'Type::Tie', '0.010';
 
 on 'test' => sub {
     requires 'Test::More', '0.98';
+    requires 'Type::API', '1.001';
 };
 
