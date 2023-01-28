@@ -1,7 +1,7 @@
 requires 'perl', '5.12.0';
 
 requires 'Keyword::Simple', '0.04';
-requires 'PPR';
+requires 'PPR', '0.001006';
 requires 'Carp', '1.40';
 requires 'Import::Into';
 requires 'Data::Lock';

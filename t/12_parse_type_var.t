@@ -8,8 +8,9 @@ my @OK = (
     '@foo'     => [undef, '@foo'],
     '%foo'     => [undef, '%foo'],
     '  $foo'   => [undef, '$foo'],
-    '$foo  '   => [undef, '$foo  '],
-    '  $foo  ' => [undef, '$foo  '],
+    '$foo  '   => [undef, '$foo'],
+    '  $foo  ' => [undef, '$foo'],
+    '$foo#bar' => [undef, '$foo'],
 
     '$Foo::Bar::foo'
     => [undef, '$Foo::Bar::foo'],
@@ -34,14 +35,17 @@ my @OK = (
 
     '  Str $foo'    => ['Str', '$foo'],
     'Str  $foo'     => ['Str', '$foo'],
-    'Str $foo  '    => ['Str', '$foo  '],
-    '  Str  $foo  ' => ['Str', '$foo  '],
+    'Str $foo  '    => ['Str', '$foo'],
+    '  Str  $foo  ' => ['Str', '$foo'],
 
     'Str $Foo::Bar::foo' => ['Str', '$Foo::Bar::foo'],
 );
 
 my @NG = (
     'foo',
+    '$foo;bar',
+    '$foo}bar',
+    '$foo} {}',
     'Str Str $foo',
     'Foo::Bar $foo',
     '$str $foo',

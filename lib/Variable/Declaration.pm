@@ -228,6 +228,7 @@ sub _parse_type_var {
         (?&PerlOWS)
         (?<type>(?&PerlIdentifier) | (?&PerlCall) )? (?&PerlOWS)
         (?<var>(?:(?&PerlVariable)))
+        (?&PerlOWS)
         \Z
         $PPR::GRAMMAR
     }x;
