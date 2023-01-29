@@ -12,3 +12,7 @@ on 'test' => sub {
     requires 'Type::API', '1.001';
 };
 
+on configure => sub {
+    requires 'Module::Build::Tiny', '0.035';
+};
+
