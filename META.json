@@ -70,10 +70,10 @@
          "web" : "https://github.com/kfly8/p5-Variable-Declaration"
       }
    },
-   "version" : "0.04",
+   "version" : "0.06",
    "x_authority" : "cpan:KFLY",
    "x_contributors" : [
-      "Kenta Kobayashi <kentafly88@gmail.com>"
+      "kobaken <kentafly88@gmail.com>"
    ],
    "x_serialization_backend" : "JSON::PP version 4.07",
    "x_static_install" : 1
