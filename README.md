@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/kfly8/p5-Variable-Declaration.svg?branch=master)](https://travis-ci.org/kfly8/p5-Variable-Declaration) [![Coverage Status](https://img.shields.io/coveralls/kfly8/p5-Variable-Declaration/master.svg?style=flat)](https://coveralls.io/r/kfly8/p5-Variable-Declaration?branch=master) [![MetaCPAN Release](https://badge.fury.io/pl/Variable-Declaration.svg)](https://metacpan.org/release/Variable-Declaration)
+[![Actions Status](https://github.com/kfly8/p5-Variable-Declaration/workflows/test/badge.svg)](https://github.com/kfly8/p5-Variable-Declaration/actions) [![Coverage Status](https://img.shields.io/coveralls/kfly8/p5-Variable-Declaration/master.svg?style=flat)](https://coveralls.io/r/kfly8/p5-Variable-Declaration?branch=master) [![MetaCPAN Release](https://badge.fury.io/pl/Variable-Declaration.svg)](https://metacpan.org/release/Variable-Declaration)
 # NAME
 
 Variable::Declaration - declare with type constraint
@@ -36,7 +36,7 @@ Variable::Declaration provides new variable declarations, i.e. `let`, `static`, 
 
 ## INTROSPECTION
 
-The function Variable::Declaration::info lets you introspect return values like [Variable::Declaration::Info](https://metacpan.org/pod/Variable::Declaration::Info):
+The function Variable::Declaration::info lets you introspect return values like [Variable::Declaration::Info](https://metacpan.org/pod/Variable%3A%3ADeclaration%3A%3AInfo):
 
 ```perl
 use Variable::Declaration;
